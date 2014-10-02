@@ -8,4 +8,4 @@ TEST_KEY_3 = {
 TEST_KEY_4 = ''
 
 #negative_tests
-test_key_5 = 'test_value_5'
+Test_Key_5 = 'TEST_VALUE_5'
