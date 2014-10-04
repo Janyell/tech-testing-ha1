@@ -3,22 +3,6 @@ import mock
 from source.lib import utils
 
 
-class TestQueue:
-    def __init__(self):
-        pass
-
-    def tube(self, name, **kwargs):
-        pass
-
-
-class TestProcess:
-    def __init__(self, daemon=False):
-        self.daemon = daemon
-
-    def start(self):
-        pass
-
-
 class LibUtilsTestCase(unittest.TestCase):
     # daemonize()
         #positive_tests
@@ -123,7 +107,8 @@ class LibUtilsTestCase(unittest.TestCase):
         port = 80
         space = 0
         name = 'tube_name'
-        queue = TestQueue()
+        queue = mock.MagicMock()
+        queue.tube = mock.Mock()
         with mock.patch('source.lib.utils.tarantool_queue.Queue', mock.Mock(return_value=queue)) as Queue:
             utils.get_tube(host, port, space, name)
 
@@ -136,7 +121,9 @@ class LibUtilsTestCase(unittest.TestCase):
         target = mock.Mock()
         args = ''
         parent_pid = 42
-        process = TestProcess()
+        process = mock.MagicMock()
+        process.daemon = False
+        process.start = mock.Mock()
         with mock.patch('source.lib.utils.Process', mock.Mock(return_value=process)) as Process:
             utils.spawn_workers(num, target, args, parent_pid)
 
