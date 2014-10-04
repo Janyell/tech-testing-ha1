@@ -3,6 +3,22 @@ import mock
 from source.lib import utils
 
 
+class TestQueue:
+    def __init__(self):
+        pass
+
+    def tube(self, name, **kwargs):
+        pass
+
+
+class TestProcess:
+    def __init__(self, daemon=False):
+        self.daemon = daemon
+
+    def start(self):
+        pass
+
+
 class LibUtilsTestCase(unittest.TestCase):
     # daemonize()
         #positive_tests
@@ -102,33 +118,30 @@ class LibUtilsTestCase(unittest.TestCase):
 
     #get_tube(host, port, space, name)
         #positive_tests
-    """def test_get_tube(self):
+    def test_get_tube(self):
         host = 'localhost'
         port = 80
         space = 0
         name = 'tube_name'
-        with mock.patch('tarantool_queue.tarantool_queue.Queue', mock.Mock()) as Queue:
-            with mock.patch('tarantool_queue.tarantool_queue.Queue.tube', mock.Mock()) as tube:
-                utils.get_tube(host, port, space, name)
+        queue = TestQueue()
+        with mock.patch('source.lib.utils.tarantool_queue.Queue', mock.Mock(return_value=queue)) as Queue:
+            utils.get_tube(host, port, space, name)
 
         Queue.assert_called_once_with(host=host, port=port, space=space)
-        Queue.tube.assert_called_once_with(name)"""
 
     #spawn_workers(num, target, args, parent_pid)
         #positive_tests
-    """def test_spawn_workers(self):
-        from source.lib.worker import worker
+    def test_spawn_workers(self):
         num = 10
-        target = worker
+        target = mock.Mock()
         args = ''
         parent_pid = 42
-        with mock.patch('multiprocessing.Process', mock.Mock()) as Process:
-            with mock.patch('multiprocessing.Process.start', mock.Mock()) as Process_start:
-                utils.spawn_workers(num, target, args, parent_pid)
+        process = TestProcess()
+        with mock.patch('source.lib.utils.Process', mock.Mock(return_value=process)) as Process:
+            utils.spawn_workers(num, target, args, parent_pid)
 
-        Process.assert_called_once_with(target=target, args=args, kwargs={'parent_pid': parent_pid})
+        assert Process.call_count == num
         self.assertTrue(Process.daemon)
-        Process_start.assert_called_once_with()"""
 
     #check_network_status
         #positive_tests

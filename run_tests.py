@@ -13,6 +13,8 @@ from source.tests.test_notification_pusher import NotificationPusherTestCase
 from source.tests.test_redirect_checker import RedirectCheckerTestCase
 from source.tests.test_lib_utils import LibUtilsTestCase
 from source.tests.test_lib_worker import LibWorkerTestCase
+from source.tests.test_lib__init import LibInitTestCase
+
 
 def _create_connection(*args, **kwargs):
     raise AssertionError('Unmocked http request')
@@ -28,10 +30,11 @@ def mocked_connection():
 
 if __name__ == '__main__':
     suite = unittest.TestSuite((
+        unittest.makeSuite(NotificationPusherTestCase),
+        unittest.makeSuite(RedirectCheckerTestCase),
+        unittest.makeSuite(LibUtilsTestCase),
         unittest.makeSuite(LibWorkerTestCase),
-        #unittest.makeSuite(NotificationPusherTestCase),
-        #unittest.makeSuite(RedirectCheckerTestCase),
-        #unittest.makeSuite(LibUtilsTestCase),
+        unittest.makeSuite(LibInitTestCase),
     ))
     with mocked_connection():
         result = unittest.TextTestRunner().run(suite)

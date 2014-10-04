@@ -64,3 +64,10 @@ class LibWorkerTestCase(unittest.TestCase):
         timeout = 3
         with mock.patch('source.lib.worker.get_redirect_history', mock.Mock(return_value=return_value)):
             self.assertEquals((is_input, data_modified), worker.get_redirect_history_from_task(task, timeout))
+
+    #worker(config, parent_pid)
+        #positive_tests
+    """def test_worker(self):
+        config = '/file/path'
+        parent_pid = 42
+        with mock.patch('source.lib.worker.get_tube', mock.Mock()):"""
