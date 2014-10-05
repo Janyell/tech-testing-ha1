@@ -105,30 +105,41 @@ class LibWorkerTestCase(unittest.TestCase):
                         worker.worker(config, parent_pid)
 
         self.assertFalse(logger.debug.called)
+        self.assertFalse(logger.exception.called)
 
-    """def test_worker_result_is_input(self):
+    def test_worker_result_is_input(self):
         config = mock.MagicMock()
         parent_pid = 42
         tube = mock.MagicMock()
-        with mock.patch('source.lib.worker.get_tube', tube):
-            with mock.patch('os.path.exists', mock.Mock(side_effect=[True, False])) as os_path_exists:
-                with mock.patch('source.lib.worker.get_redirect_history_from_task',
-                                mock.Mock(return_value=['is_input', 'data'])) as get_redirect_history_from_task:
-                    self.assertEquals(None, worker.worker(config, parent_pid))
-                    assert os_path_exists.call_count == 2
-                    get_redirect_history_from_task.assert_called_once()
+        input_tube = mock.MagicMock()
+        output_tube = mock.MagicMock()
+        with mock.patch('source.lib.worker.get_tube', mock.Mock(return_value=tube)):
+            with mock.patch('os.path.exists', mock.Mock(side_effect=[True, False])):
+                with mock.patch('source.lib.worker.get_tube', mock.Mock(side_effect=[input_tube, output_tube])):
+                    with mock.patch('source.lib.worker.get_redirect_history_from_task',
+                                    mock.Mock(return_value=['is_input', 'data'])):
+                        with mock.patch('source.lib.worker.logger', mock.Mock()) as logger:
+                            worker.worker(config, parent_pid)
+
+        self.assertFalse(output_tube.put.called)
+        self.assertFalse(logger.exception.called)
 
     def test_worker_result_not_is_input(self):
         config = mock.MagicMock()
         parent_pid = 42
         tube = mock.MagicMock()
-        with mock.patch('source.lib.worker.get_tube', tube):
-            with mock.patch('os.path.exists', mock.Mock(side_effect=[True, False])) as os_path_exists:
-                with mock.patch('source.lib.worker.get_redirect_history_from_task',
-                                mock.Mock(return_value=[None, 'data'])) as get_redirect_history_from_task:
-                    self.assertEquals(None, worker.worker(config, parent_pid))
-                    assert os_path_exists.call_count == 2
-                    get_redirect_history_from_task.assert_called_once()
+        input_tube = mock.MagicMock()
+        output_tube = mock.MagicMock()
+        with mock.patch('source.lib.worker.get_tube', mock.Mock(return_value=tube)):
+            with mock.patch('os.path.exists', mock.Mock(side_effect=[True, False])):
+                with mock.patch('source.lib.worker.get_tube', mock.Mock(side_effect=[input_tube, output_tube])):
+                    with mock.patch('source.lib.worker.get_redirect_history_from_task',
+                                    mock.Mock(return_value=[None, 'data'])):
+                        with mock.patch('source.lib.worker.logger', mock.Mock()) as logger:
+                            worker.worker(config, parent_pid)
+
+        self.assertFalse(input_tube.put.called)
+        self.assertFalse(logger.exception.called)
 
          #negative_tests
     def test_worker_not_result_database_error(self):
@@ -139,10 +150,12 @@ class LibWorkerTestCase(unittest.TestCase):
         task = mock.MagicMock()
         tube.take = mock.Mock(return_value=task)
         task.ack = mock.Mock(side_effect=DatabaseError)
-        with mock.patch('source.lib.worker.get_tube', tube):
-            with mock.patch('os.path.exists', mock.Mock(side_effect=[True, False])) as os_path_exists:
+        with mock.patch('source.lib.worker.get_tube', mock.Mock(return_value=tube)):
+            with mock.patch('os.path.exists', mock.Mock(side_effect=[True, False])):
                 with mock.patch('source.lib.worker.get_redirect_history_from_task',
-                                mock.Mock(return_value=None)) as get_redirect_history_from_task:
-                    self.assertEquals(None, worker.worker(config, parent_pid))
-                    assert os_path_exists.call_count == 2
-                    get_redirect_history_from_task.assert_called_once()"""
+                                mock.Mock(return_value=None)):
+                    with mock.patch('source.lib.worker.logger', mock.Mock()) as logger:
+                        worker.worker(config, parent_pid)
+
+        self.assertFalse(logger.debug.called)
+        self.assertTrue(logger.exception.called)
